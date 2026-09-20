@@ -1,7 +1,8 @@
 """Recursive-descent parser: token list in, an AST node out. Supports
 CREATE TABLE, INSERT, SELECT (with a single INNER JOIN, WHERE, ORDER BY,
 LIMIT), UPDATE, and DELETE. WHERE clauses support a flat chain of AND/OR
-comparisons (no parentheses inside WHERE, kept simple deliberately).
+comparisons (no parentheses inside WHERE, kept simple deliberately), plus
+IS NULL / IS NOT NULL checks.
 """
 from __future__ import annotations
 
@@ -163,6 +164,10 @@ class Parser:
 
     def _parse_condition(self):
         column = self._parse_qualified_column()
+        if self.match("IS"):
+            negated = self.match("NOT")
+            self.expect("NULL")
+            return ast.NullCheck(column=column, negated=negated)
         op_tok = self.expect("OP")
         value = self._parse_literal()
         return ast.Condition(column=column, op=op_tok.value, value=value)

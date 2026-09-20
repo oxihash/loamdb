@@ -38,6 +38,13 @@ class Condition:
 
 
 @dataclass
+class NullCheck:
+    """<column> IS NULL, or <column> IS NOT NULL when `negated` is True."""
+    column: str
+    negated: bool = False
+
+
+@dataclass
 class BoolExpr:
     """AND/OR of two sub-expressions (Condition or another BoolExpr)."""
     op: str  # AND | OR

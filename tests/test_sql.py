@@ -200,6 +200,27 @@ def test_persistence_across_reopen():
     print("test_persistence_across_reopen passed")
 
 
+def test_is_null_and_is_not_null():
+    db, path = fresh_db("t_isnull.db")
+    execute(db, "CREATE TABLE t (id INTEGER PRIMARY KEY, val TEXT)")
+    execute(db, "INSERT INTO t VALUES (1, 'a')")
+    execute(db, "INSERT INTO t (id) VALUES (2)")
+    execute(db, "INSERT INTO t VALUES (3, 'c')")
+
+    _, rows = execute(db, "SELECT id FROM t WHERE val IS NULL")
+    assert [r[0] for r in rows] == [2]
+
+    _, rows = execute(db, "SELECT id FROM t WHERE val IS NOT NULL ORDER BY id")
+    assert [r[0] for r in rows] == [1, 3]
+
+    _, rows = execute(db, "SELECT id FROM t WHERE val IS NULL OR val = 'c'")
+    assert sorted(r[0] for r in rows) == [2, 3]
+
+    db.close()
+    cleanup(path)
+    print("test_is_null_and_is_not_null passed")
+
+
 def test_string_primary_key():
     db, path = fresh_db("t_strpk.db")
     execute(db, "CREATE TABLE tags (name TEXT PRIMARY KEY, count INTEGER)")
@@ -222,5 +243,6 @@ if __name__ == "__main__":
     test_inner_join()
     test_transactional_atomicity_on_bad_row_mid_insert()
     test_persistence_across_reopen()
+    test_is_null_and_is_not_null()
     test_string_primary_key()
     print("\nALL SQL TESTS PASSED")

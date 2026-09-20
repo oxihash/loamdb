@@ -75,6 +75,9 @@ def _eval_where(where, ctx: RowContext) -> bool:
         if where.op == "AND":
             return _eval_where(where.left, ctx) and _eval_where(where.right, ctx)
         return _eval_where(where.left, ctx) or _eval_where(where.right, ctx)
+    if isinstance(where, ast.NullCheck):
+        is_null = ctx.get(where.column) is None
+        return not is_null if where.negated else is_null
     return _compare(ctx.get(where.column), where.op, where.value)
 
 

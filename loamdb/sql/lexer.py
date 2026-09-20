@@ -10,7 +10,7 @@ KEYWORDS = {
     "SELECT", "FROM", "WHERE", "AND", "OR", "NOT",
     "ORDER", "BY", "ASC", "DESC", "LIMIT",
     "UPDATE", "SET", "DELETE",
-    "JOIN", "INNER", "ON", "NULL",
+    "JOIN", "INNER", "ON", "NULL", "IS",
 }
 
 
